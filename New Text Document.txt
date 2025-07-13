@@ -1,0 +1,130 @@
+## ✅ Step-by-Step Plan: Build a Chinese–Vietnamese Dictionary (Clean + Scalable)
+
+### 🔹 **Phase 1: Base Word List**
+
+Use the **CC-CEDICT** dataset as your foundation.
+
+| Task                       | Tool / Source                                                                                              |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Download CEDICT            | [https://www.mdbg.net/chinese/dictionary?page=cedict](https://www.mdbg.net/chinese/dictionary?page=cedict) |
+| Parse into structured data | Use [`cedict_parser`](https://github.com/ftao/python-cc-cedict) or a script                                |
+| Fields available           | Traditional, Simplified, Pinyin, English meaning                                                           |
+
+✅ Result: \~120,000 Chinese entries with English definitions.
+
+---
+
+### 🔹 **Phase 2: Translate to Vietnamese (AI-Powered)**
+
+Use **DeepSeek**, **GPT-4**, or **Gemini** to translate each entry from Chinese/English to Vietnamese.
+
+#### Recommended prompt:
+
+```json
+You are building a Chinese–Vietnamese learner’s dictionary.
+
+Input:
+Word: 认真  
+Pinyin: rènzhēn  
+Definition (English): conscientious; earnest; serious  
+Definition (Chinese): 形容一个人做事非常小心、用心。
+
+Output format:
+{
+  "word": "认真",
+  "pinyin": "rènzhēn",
+  "vi_meaning": "chăm chỉ; nghiêm túc; cẩn thận"
+}
+```
+
+✅ Tips:
+
+* Batch 10–20 words per prompt for efficiency.
+* Save results in `.json` or insert into MongoDB/Postgres.
+
+---
+
+### 🔹 **Phase 3: Add Example Sentences**
+
+Use:
+
+1. **Tatoeba** ([https://tatoeba.org/eng/downloads](https://tatoeba.org/eng/downloads)) – search for Chinese-Vietnamese pairs.
+2. **Wiktionary** – scrape examples using `wiktextract` or BeautifulSoup.
+3. **AI-generated fallback**:
+
+```plaintext
+Generate 2 example sentences in Chinese using the word "认真", with pinyin and Vietnamese translation.
+```
+
+✅ Save in format:
+
+```json
+{
+  "cn": "请认真完成作业。",
+  "pinyin": "Qǐng rènzhēn wánchéng zuòyè.",
+  "vi": "Hãy hoàn thành bài tập một cách nghiêm túc."
+}
+```
+
+---
+
+### 🔹 **Phase 4: Add Metadata**
+
+From **Wiktionary** or AI, you can enrich:
+
+* Measure words (量詞)
+* Synonyms / Antonyms
+* Part of speech (`noun`, `verb`, etc.)
+* TOCFL / HSK level (optional)
+
+✅ Format:
+
+```json
+"measure_words": ["个", "项"],
+"synonyms": ["仔细", "用心"],
+"antonyms": ["马虎"],
+"part_of_speech": ["adj"]
+```
+
+---
+
+### 🔹 **Phase 5: Store and Query the Data**
+
+| Option   | Use case                        |
+| -------- | ------------------------------- |
+| SQLite   | Easy testing, local mobile apps |
+
+
+---
+
+### 🔹 **Phase 6: Frontend or API**
+
+You can use:
+sqlite
+
+---
+
+## ✅ Sample JSON Schema for One Entry
+
+```json
+{
+  "word": "朋友",
+  "pinyin": "péngyou",
+  "zhuyin": "ㄆㄥˊㄧㄡ˙",
+  "vi_meaning": "bạn bè; bằng hữu",
+  "part_of_speech": ["n"],
+  "examples": [
+    {
+      "cn": "他是我的好朋友。",
+      "pinyin": "Tā shì wǒ de hǎo péngyou.",
+      "vi": "Anh ấy là bạn tốt của tôi."
+    }
+  ],
+  "measure_words": ["个"],
+  "synonyms": ["好友"],
+  "antonyms": ["敌人"],
+  "frequency_rank": 295
+}
+```
+
+---

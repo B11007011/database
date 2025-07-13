@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Chinese-Vietnamese Dictionary - Home{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="search-container">
+            <h1 class="mb-4">
+                <i class="fas fa-book text-primary"></i> 
+                Chinese-Vietnamese Dictionary
+            </h1>
+            <p class="lead">
+                A comprehensive dictionary for Chinese-Vietnamese language learners with HSK/TOCFL levels, 
+                Pinyin, Zhuyin, and Hanviet readings.
+            </p>
+            
+            <form action="{{ url_for('search') }}" method="GET" class="mb-4">
+                <div class="input-group input-group-lg">
+                    <input type="text" 
+                           class="form-control" 
+                           name="q" 
+                           placeholder="Search Chinese characters or Vietnamese meaning..."
+                           autocomplete="off">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+            </form>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <a href="{{ url_for('search', hsk=1) }}" class="btn btn-outline-warning w-100 mb-2">
+                        <i class="fas fa-star"></i> HSK Level 1
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a href="{{ url_for('search', hsk=2) }}" class="btn btn-outline-warning w-100 mb-2">
+                        <i class="fas fa-star"></i> HSK Level 2
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a href="{{ url_for('search', hsk=3) }}" class="btn btn-outline-warning w-100 mb-2">
+                        <i class="fas fa-star"></i> HSK Level 3
+                    </a>
+                </div>
+            </div>
+            
+            <div class="row mt-2">
+                <div class="col-md-6">
+                    <a href="{{ url_for('random_words') }}" class="btn btn-outline-success w-100">
+                        <i class="fas fa-random"></i> Random Words
+                    </a>
+                </div>
+                <div class="col-md-6">
+                    <a href="{{ url_for('search', category='family') }}" class="btn btn-outline-info w-100">
+                        <i class="fas fa-tags"></i> Browse Categories
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="word-card">
+            <h3><i class="fas fa-chart-bar text-info"></i> Dictionary Statistics</h3>
+            <ul class="list-unstyled">
+                <li><strong>Total Words:</strong> {{ "{:,}".format(stats.total_words) }}</li>
+                <li><strong>With Pinyin:</strong> {{ "{:,}".format(stats.with_pinyin) }}</li>
+                <li><strong>With Zhuyin:</strong> {{ "{:,}".format(stats.with_zhuyin) }}</li>
+                <li><strong>With Hanviet:</strong> {{ "{:,}".format(stats.with_hanviet) }}</li>
+                <li><strong>With English:</strong> {{ "{:,}".format(stats.with_english) }}</li>
+            </ul>
+        </div>
+        
+        {% if stats.hsk_distribution %}
+        <div class="word-card">
+            <h4><i class="fas fa-layer-group text-warning"></i> HSK Distribution</h4>
+            <ul class="list-unstyled">
+                {% for level, count in stats.hsk_distribution.items() %}
+                <li>
+                    <span class="badge hsk-badge">HSK {{ level }}</span>
+                    {{ "{:,}".format(count) }} words
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        
+        {% if stats.tocfl_distribution %}
+        <div class="word-card">
+            <h4><i class="fas fa-layer-group text-info"></i> TOCFL Distribution</h4>
+            <ul class="list-unstyled">
+                {% for level, count in stats.tocfl_distribution.items() %}
+                <li>
+                    <span class="badge tocfl-badge">TOCFL {{ level }}</span>
+                    {{ "{:,}".format(count) }} words
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        
+        <div class="word-card">
+            <h4><i class="fas fa-info-circle text-success"></i> How to Use</h4>
+            <ul class="small">
+                <li>Search by Chinese characters: <code>你好</code></li>
+                <li>Search by Vietnamese: <code>xin chào</code></li>
+                <li>Search by Pinyin: <code>nihao</code></li>
+                <li>Filter by HSK/TOCFL levels</li>
+                <li>Browse by categories</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %} 

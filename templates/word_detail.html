@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}{{ entry.word }} - Chinese-Vietnamese Dictionary{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="word-card">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <h1 class="chinese-text mb-0">{{ entry.word }}</h1>
+                <div>
+                    {% if entry.hsk_level %}
+                    <span class="badge hsk-badge me-1">HSK {{ entry.hsk_level }}</span>
+                    {% endif %}
+                    {% if entry.tocfl_level %}
+                    <span class="badge tocfl-badge">TOCFL {{ entry.tocfl_level }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            {% if entry.pinyin %}
+            <h3 class="pinyin-text mb-3">{{ entry.pinyin }}</h3>
+            {% endif %}
+            
+            {% if entry.zhuyin %}
+            <p class="text-muted mb-3"><strong>Zhuyin:</strong> {{ entry.zhuyin }}</p>
+            {% endif %}
+            
+            <h4 class="vietnamese-text mb-3">{{ entry.vi_meaning }}</h4>
+            
+            {% if entry.en_meaning %}
+            <p class="text-muted mb-3"><strong>English:</strong> {{ entry.en_meaning }}</p>
+            {% endif %}
+            
+            {% if entry.hanviet_reading %}
+            <p class="text-info mb-3">
+                <i class="fas fa-language"></i> <strong>Hanviet:</strong> {{ entry.hanviet_reading }}
+            </p>
+            {% endif %}
+            
+            {% if entry.part_of_speech %}
+            <p class="mb-3">
+                <strong>Part of Speech:</strong> 
+                <span class="badge bg-secondary">{{ entry.part_of_speech }}</span>
+            </p>
+            {% endif %}
+            
+            {% if entry.frequency_rank %}
+            <p class="mb-3">
+                <strong>Frequency Rank:</strong> {{ entry.frequency_rank }}
+            </p>
+            {% endif %}
+        </div>
+        
+        {% if entry.examples and entry.examples|length > 0 %}
+        <div class="word-card">
+            <h4><i class="fas fa-quote-left text-primary"></i> Example Sentences</h4>
+            {% for example in entry.examples %}
+            <div class="mb-3 p-3 bg-light rounded">
+                <p class="chinese-text mb-1">{{ example.chinese }}</p>
+                {% if example.pinyin %}
+                <p class="pinyin-text small mb-1">{{ example.pinyin }}</p>
+                {% endif %}
+                <p class="vietnamese-text mb-1">{{ example.vietnamese }}</p>
+                {% if example.english %}
+                <p class="text-muted small mb-0">{{ example.english }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-lg-4">
+        {% if entry.synonyms and entry.synonyms|length > 0 %}
+        <div class="word-card">
+            <h4><i class="fas fa-equals text-success"></i> Synonyms</h4>
+            <div>
+                {% for synonym in entry.synonyms %}
+                <span class="badge bg-success me-1 mb-1">{{ synonym }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if entry.antonyms and entry.antonyms|length > 0 %}
+        <div class="word-card">
+            <h4><i class="fas fa-not-equal text-danger"></i> Antonyms</h4>
+            <div>
+                {% for antonym in entry.antonyms %}
+                <span class="badge bg-danger me-1 mb-1">{{ antonym }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if entry.measure_words and entry.measure_words|length > 0 %}
+        <div class="word-card">
+            <h4><i class="fas fa-ruler text-info"></i> Measure Words</h4>
+            <div>
+                {% for measure in entry.measure_words %}
+                <span class="badge bg-info me-1 mb-1">{{ measure }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if entry.tags and entry.tags|length > 0 %}
+        <div class="word-card">
+            <h4><i class="fas fa-tags text-warning"></i> Categories</h4>
+            <div>
+                {% for tag in entry.tags %}
+                <span class="badge bg-warning text-dark me-1 mb-1">{{ tag }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="word-card">
+            <h4><i class="fas fa-tools text-secondary"></i> Actions</h4>
+            <div class="d-grid gap-2">
+                <a href="{{ url_for('search', q=entry.word) }}" class="btn btn-outline-primary">
+                    <i class="fas fa-search"></i> Search Similar Words
+                </a>
+                {% if entry.hsk_level %}
+                <a href="{{ url_for('search', hsk=entry.hsk_level) }}" class="btn btn-outline-warning">
+                    <i class="fas fa-star"></i> More HSK {{ entry.hsk_level }} Words
+                </a>
+                {% endif %}
+                {% if entry.tocfl_level %}
+                <a href="{{ url_for('search', tocfl=entry.tocfl_level) }}" class="btn btn-outline-info">
+                    <i class="fas fa-graduation-cap"></i> More TOCFL {{ entry.tocfl_level }} Words
+                </a>
+                {% endif %}
+                <a href="{{ url_for('random_words') }}" class="btn btn-outline-success">
+                    <i class="fas fa-random"></i> Random Words
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a href="{{ url_for('search') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Search
+    </a>
+</div>
+{% endblock %} 
