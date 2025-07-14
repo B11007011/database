@@ -71,6 +71,12 @@
         <div class="word-card">
             <div class="d-flex justify-content-between align-items-start mb-2">
                 <h4 class="chinese-text mb-0">{{ entry.word }}</h4>
+                {% if entry.traditional or entry.simplified %}
+                    <p class="text-muted small mb-1">
+                        {% if entry.traditional %}<strong>Traditional:</strong> {{ entry.traditional }}{% endif %}
+                        {% if entry.simplified %} <strong>Simplified:</strong> {{ entry.simplified }}{% endif %}
+                    </p>
+                {% endif %}
                 <div>
                     {% if entry.hsk_level %}
                     <span class="badge hsk-badge">HSK {{ entry.hsk_level }}</span>

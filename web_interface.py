@@ -29,7 +29,7 @@ def close_dictionary(error):
 
 def check_database_exists():
     """Check if database file exists"""
-    return Path("chinese_vietnamese_dictionary.db").exists()
+    return Path("cedict.db").exists()
 
 @app.route('/')
 def index():

@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 class VietnameseDataImporter:
-    def __init__(self, db_path="chinese_vietnamese_dictionary.db"):
+    def __init__(self, db_path="cedict.db"):
         self.db_path = db_path
         self.conn = sqlite3.connect(db_path)
         self.cursor = self.conn.cursor()

@@ -8,8 +8,9 @@ import sqlite3
 import json
 import re
 from typing import Dict, List, Optional, Tuple
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
+from pinyin_utils import convert_pinyin_tone_numbers
 
 @dataclass
 class DictionaryEntry:
@@ -18,23 +19,28 @@ class DictionaryEntry:
     word: str
     traditional: Optional[str]
     simplified: Optional[str]
-    pinyin: Optional[str]
-    zhuyin: Optional[str]
-    vi_meaning: str
-    en_meaning: Optional[str]
-    part_of_speech: Optional[str]
-    hsk_level: Optional[int]
-    tocfl_level: Optional[int]
-    frequency_rank: Optional[int]
-    hanviet_reading: Optional[str]
-    examples: List[Dict] = None
-    synonyms: List[str] = None
-    antonyms: List[str] = None
-    measure_words: List[str] = None
-    tags: List[str] = None
+    pinyin: Optional[str] = None
+    zhuyin: Optional[str] = None
+    vi_meaning: str = ""
+    en_meaning: Optional[str] = None
+    part_of_speech: Optional[str] = None
+    hsk_level: Optional[int] = None
+    tocfl_level: Optional[int] = None
+    frequency_rank: Optional[int] = None
+    hanviet_reading: Optional[str] = None
+    examples: List[Dict] = field(default_factory=list)
+    synonyms: List[str] = field(default_factory=list)
+    antonyms: List[str] = field(default_factory=list)
+    measure_words: List[str] = field(default_factory=list)
+    tags: List[str] = field(default_factory=list)
+    
+    def __post_init__(self):
+        # Convert pinyin to use diacritical marks
+        if self.pinyin:
+            self.pinyin = convert_pinyin_tone_numbers(self.pinyin)
 
 class ChineseVietnameseDictionary:
-    def __init__(self, db_path="chinese_vietnamese_dictionary.db"):
+    def __init__(self, db_path="cedict.db"):
         self.db_path = db_path
         if not Path(db_path).exists():
             raise FileNotFoundError(f"Dictionary database not found: {db_path}")
@@ -156,34 +162,29 @@ class ChineseVietnameseDictionary:
         entries = self._build_entries([result], include_details=True)
         return entries[0] if entries else None
     
-    def _build_entries(self, rows: List[sqlite3.Row], include_details: bool = False) -> List[DictionaryEntry]:
-        """Build DictionaryEntry objects from database rows"""
+    def _build_entries(self, rows) -> List[DictionaryEntry]:
+        """Convert database rows to DictionaryEntry objects"""
         entries = []
-        
         for row in rows:
+            # Convert row to dict if it's a sqlite3.Row object
+            if hasattr(row, 'keys'):
+                row = {key: row[key] for key in row.keys()}
+                
             entry = DictionaryEntry(
                 id=row['id'],
                 word=row['word'],
-                traditional=row['traditional'],
-                simplified=row['simplified'],
-                pinyin=row['pinyin'],
-                zhuyin=row['zhuyin'],
-                vi_meaning=row['vi_meaning'],
-                en_meaning=row['en_meaning'],
-                part_of_speech=row['part_of_speech'],
-                hsk_level=row['hsk_level'],
-                tocfl_level=row['tocfl_level'],
-                frequency_rank=row['frequency_rank'],
-                hanviet_reading=row['hanviet_reading']
+                traditional=row.get('traditional'),
+                simplified=row.get('simplified'),
+                pinyin=row.get('pinyin'),
+                zhuyin=row.get('zhuyin'),
+                vi_meaning=row.get('vi_meaning', ''),
+                en_meaning=row.get('en_meaning'),
+                part_of_speech=row.get('part_of_speech'),
+                hsk_level=row.get('hsk_level'),
+                tocfl_level=row.get('tocfl_level'),
+                frequency_rank=row.get('frequency_rank'),
+                hanviet_reading=row.get('hanviet_reading')
             )
-            
-            if include_details:
-                entry.examples = self._get_examples(row['id'])
-                entry.synonyms = self._get_synonyms(row['id'])
-                entry.antonyms = self._get_antonyms(row['id'])
-                entry.measure_words = self._get_measure_words(row['id'])
-                entry.tags = self._get_tags(row['id'])
-            
             entries.append(entry)
         
         return entries

@@ -9,7 +9,7 @@ from pathlib import Path
 
 def check_database():
     """Check if the dictionary database exists"""
-    return Path("chinese_vietnamese_dictionary.db").exists()
+    return Path("cedict.db").exists()
 
 def main():
     print("=" * 60)
